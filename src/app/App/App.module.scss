@@ -1,0 +1,7 @@
+@use "/src/app/styles/vars.scss";
+
+.main {
+  width: 100%;
+  height: calc(100% - vars.$navbar-height);
+  position: absolute;
+}

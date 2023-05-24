@@ -1,0 +1,32 @@
+@use "/src/app/styles/vars.scss";
+
+.inputContainer {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.input {
+  border: none;
+  background-color: vars.$background;
+  outline: none;
+  resize: none;
+
+  &:focus ~ .line {
+    transform: translateX(0);
+  }
+}
+
+.line {
+  height: 1px;
+  background-color: vars.$primary--main;
+  transition: all 200ms;
+}
+
+.animationFromStart {
+  transform: translateX(-100%);
+}
+
+.animationFromEnd {
+  transform: translateX(100%);
+}

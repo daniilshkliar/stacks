@@ -1,0 +1,36 @@
+$navbar-height: 3.125rem;
+$font-size--l: 2rem;
+$font-size--m: 1.4rem;
+$font-size--s: 1rem;
+
+$background: #fffffe;
+$primary--main: #234e70;
+$secondary--main: #faf8bf;
+$error--main: #d32f2f;
+$error--light: #ef5350;
+$error--dark: #c62828;
+$success--main: #2e7d32;
+$success--light: #4caf50;
+$success--dark: #1b5e20;
+$warning--main: #ed6c02;
+$warning--light: #ff9800;
+$warning--dark: #e65100;
+$info--main: #0288d1;
+$info--light: #03a9f4;
+$info--dark: #01579b;
+$text--main: #234e70;
+$text--light: #e9e9e9;
+$text--dark: #9ca1aa;
+$text--active: #181d22;
+$disabled--main: #fafafa;
+
+$primary--main--filter: brightness(0) saturate(100%) invert(25%) sepia(9%)
+  saturate(3754%) hue-rotate(165deg) brightness(98%) contrast(88%);
+$secondary--main--filter: brightness(0) saturate(100%) invert(88%) sepia(19%)
+  saturate(520%) hue-rotate(355deg) brightness(111%) contrast(96%);
+$text--light--filter: brightness(0) saturate(100%) invert(100%) sepia(1%)
+  saturate(1619%) hue-rotate(209deg) brightness(116%) contrast(83%);
+$text--dark--filter: brightness(0) saturate(100%) invert(73%) sepia(9%)
+  saturate(251%) hue-rotate(180deg) brightness(86%) contrast(92%);
+$white--filter: brightness(0) saturate(100%) invert(100%) sepia(0%)
+  saturate(7474%) hue-rotate(53deg) brightness(110%) contrast(105%);

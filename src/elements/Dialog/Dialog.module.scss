@@ -1,0 +1,38 @@
+@use "/src/app/styles/vars.scss";
+
+.container {
+  z-index: 9999999;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #00000055;
+  cursor: default;
+}
+
+.dialog {
+  width: max-content;
+  height: max-content;
+  margin: 2rem;
+  border-radius: 20px;
+  background-color: vars.$background;
+}
+
+.body {
+  margin: 1rem;
+  font-size: vars.$font-size--s;
+}
+
+.buttons {
+  display: flex;
+  justify-content: end;
+  margin: 0.4rem;
+
+  & div {
+    margin: 0.2rem;
+  }
+}

@@ -1,0 +1,184 @@
+@use "/src/app/styles/vars.scss";
+
+.button {
+  width: max-content;
+  text-align: center;
+  cursor: pointer;
+  outline: none;
+  user-select: none;
+  transition: all 80ms;
+
+  &:active {
+    transform: scale(0.96);
+  }
+}
+
+.s {
+  height: 1.8rem;
+  padding: 5px 12px 0 12px;
+  border-radius: 0.6rem;
+  font-size: vars.$font-size--s;
+}
+
+.m {
+  height: 2.4rem;
+  padding: 6px 18px 0 18px;
+  border-radius: 0.9rem;
+  font-size: vars.$font-size--m;
+}
+
+.l {
+  height: 3.4rem;
+  padding: 8px 24px 0 24px;
+  border-radius: 1.2rem;
+  font-size: vars.$font-size--l;
+}
+
+.default {
+  color: vars.$primary--main;
+
+  &:active {
+    background-color: vars.$text--light;
+  }
+
+  &_error {
+    color: vars.$error--dark;
+
+    &:active {
+      background-color: vars.$error--light + a0;
+    }
+  }
+
+  &_success {
+    color: vars.$success--dark;
+
+    &:active {
+      background-color: vars.$success--light + a0;
+    }
+  }
+
+  &_warning {
+    color: vars.$warning--dark;
+
+    &:active {
+      background-color: vars.$warning--light + a0;
+    }
+  }
+
+  &_info {
+    color: vars.$info--dark;
+
+    &:active {
+      background-color: vars.$info--light + a0;
+    }
+  }
+
+  &_disabled {
+    color: vars.$text--light;
+    pointer-events: none;
+  }
+}
+
+.outlined {
+  border: 1px solid vars.$primary--main;
+  background-color: vars.$background;
+  color: vars.$primary--main;
+
+  &:active {
+    border: 1px solid vars.$secondary--main;
+    color: vars.$secondary--main;
+  }
+
+  &_error {
+    border: 1px solid vars.$error--main;
+    color: vars.$error--main;
+
+    &:active {
+      border: 1px solid vars.$error--light;
+      color: vars.$error--light;
+    }
+  }
+
+  &_success {
+    border: 1px solid vars.$success--main;
+    color: vars.$success--main;
+
+    &:active {
+      border: 1px solid vars.$success--light;
+      color: vars.$success--light;
+    }
+  }
+
+  &_warning {
+    border: 1px solid vars.$warning--main;
+    color: vars.$warning--main;
+
+    &:active {
+      border: 1px solid vars.$warning--light;
+      color: vars.$warning--light;
+    }
+  }
+
+  &_info {
+    border: 1px solid vars.$info--main;
+    color: vars.$info--main;
+
+    &:active {
+      border: 1px solid vars.$info--light;
+      color: vars.$info--light;
+    }
+  }
+
+  &_disabled {
+    border: 1px solid vars.$text--light;
+    color: vars.$text--light;
+    pointer-events: none;
+  }
+}
+
+.contained {
+  background-color: vars.$primary--main;
+  color: vars.$background;
+
+  &:active {
+    background-color: vars.$secondary--main;
+  }
+
+  &_error {
+    background-color: vars.$error--main;
+
+    &:active {
+      background-color: vars.$error--light;
+    }
+  }
+
+  &_success {
+    background-color: vars.$success--main;
+
+    &:active {
+      background-color: vars.$success--light;
+    }
+  }
+
+  &_warning {
+    background-color: vars.$warning--main;
+
+    &:active {
+      background-color: vars.$warning--light;
+    }
+  }
+
+  &_info {
+    background-color: vars.$info--main;
+
+    &:active {
+      background-color: vars.$info--light;
+    }
+  }
+
+  &_disabled {
+    background-color: vars.$text--light;
+    color: vars.$text--dark;
+    pointer-events: none;
+  }
+}

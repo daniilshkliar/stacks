@@ -1,0 +1,47 @@
+@use "/src/app/styles/vars.scss";
+
+@font-face {
+  src: local("Roboto Condensed"),
+    url("/src/assets/fonts/RobotoCondensed-Regular.ttf");
+  font-family: "Roboto Condensed";
+  font-weight: normal;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Roboto Condensed";
+  letter-spacing: 0.02em;
+}
+
+html {
+  scroll-behavior: smooth;
+  overscroll-behavior: none;
+}
+
+body {
+  background-color: vars.$background;
+  overscroll-behavior: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+a {
+  color: inherit;
+  text-decoration-line: none;
+}
+
+img {
+  width: 100%;
+  object-fit: contain;
+  user-select: none;
+  pointer-events: none;
+}
+
+::-webkit-scrollbar {
+  width: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: vars.$text--light;
+}

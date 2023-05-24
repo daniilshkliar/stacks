@@ -1,0 +1,10 @@
+@use "/src/app/styles/vars.scss";
+
+.title {
+  height: vars.$navbar-height;
+  padding: 0.7rem 1.3rem 0;
+  text-align: end;
+  font-size: vars.$font-size--l;
+  color: vars.$primary--main;
+  user-select: none;
+}

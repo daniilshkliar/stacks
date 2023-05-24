@@ -1,0 +1,11 @@
+@use "/src/app/styles/vars.scss";
+
+.inputContainer {
+  height: vars.$navbar-height;
+  padding: 0.7rem 1.3rem 0;
+}
+
+.input {
+  text-align: end;
+  font-size: vars.$font-size--l;
+}

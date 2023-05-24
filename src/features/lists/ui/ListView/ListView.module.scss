@@ -1,0 +1,7 @@
+@use "/src/app/styles/vars.scss";
+
+.container {
+  max-height: calc(100% - vars.$navbar-height);
+  padding: 0.8rem 0;
+  overflow-y: auto;
+}

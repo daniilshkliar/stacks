@@ -1,0 +1,26 @@
+@use "/src/app/styles/vars.scss";
+
+.container {
+  max-height: calc(100% - vars.$navbar-height);
+  padding: 0.8rem 0;
+  overflow-y: auto;
+}
+
+.item {
+  min-height: 2.2rem;
+  padding: 0.3rem 1.3rem;
+  background-color: vars.$background;
+  font-size: vars.$font-size--m;
+  word-wrap: break-word;
+  transition: background-color 50ms;
+
+  &:active {
+    background-color: vars.$disabled--main;
+  }
+}
+
+.bold {
+  display: inline-block;
+  color: vars.$primary--main;
+  font-weight: bold;
+}

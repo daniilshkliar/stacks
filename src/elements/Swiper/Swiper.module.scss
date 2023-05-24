@@ -1,0 +1,66 @@
+@use "/src/app/styles/vars.scss";
+
+.container {
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+}
+
+.background {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  display: flex;
+  align-items: center;
+  transition: all 200ms;
+}
+
+.left {
+  justify-content: start;
+  background: vars.$success--main;
+}
+
+.right {
+  justify-content: end;
+  background-color: vars.$error--main;
+}
+
+.leftActive {
+  background-color: vars.$success--light;
+
+  & div {
+    animation: iconAnimation 500ms;
+  }
+}
+
+.rightActive {
+  background-color: vars.$error--light;
+
+  & div {
+    animation: iconAnimation 500ms;
+  }
+}
+
+.icon {
+  width: 1.5em;
+  margin: 4px 20px 0;
+  filter: vars.$white--filter;
+}
+
+@keyframes iconAnimation {
+  0% {
+    transform: rotate(0);
+  }
+  25% {
+    transform: rotate(10deg) scale(1.08);
+  }
+  50% {
+    transform: rotate(-10deg) scale(1.04);
+  }
+  75% {
+    transform: rotate(5deg) scale(1.02);
+  }
+  100% {
+    transform: rotate(0);
+  }
+}

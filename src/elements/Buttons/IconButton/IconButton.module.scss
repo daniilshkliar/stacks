@@ -1,0 +1,78 @@
+@use "/src/app/styles/vars.scss";
+
+.button {
+  border-radius: 40%;
+  cursor: pointer;
+  outline: none;
+  user-select: none;
+  transition: all 100ms;
+
+  &:active {
+    transform: scale(0.96);
+  }
+}
+
+.s {
+  width: 1.8rem;
+  height: 1.8rem;
+  padding: 5px;
+}
+
+.m {
+  width: 2.4rem;
+  height: 2.4rem;
+  padding: 7px;
+}
+
+.l {
+  width: 3rem;
+  height: 3rem;
+  padding: 9px;
+}
+
+.outlined {
+  border: 1px solid vars.$primary--main;
+  background-color: vars.$background;
+
+  & img {
+    filter: vars.$primary--main--filter;
+  }
+
+  &:active {
+    border: 1px solid vars.$secondary--main;
+
+    & img {
+      filter: vars.$secondary--main--filter;
+    }
+  }
+
+  &_disabled {
+    border: 1px solid vars.$text--light;
+    pointer-events: none;
+
+    & img {
+      filter: vars.$text--light--filter;
+    }
+  }
+}
+
+.contained {
+  background-color: vars.$primary--main;
+
+  & img {
+    filter: vars.$white--filter;
+  }
+
+  &:active {
+    background-color: vars.$secondary--main;
+  }
+
+  &_disabled {
+    background-color: vars.$text--light;
+    pointer-events: none;
+
+    & img {
+      filter: vars.$text--dark--filter;
+    }
+  }
+}
