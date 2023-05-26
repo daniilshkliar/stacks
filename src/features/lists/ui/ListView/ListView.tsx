@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { useOnClickOutside } from "usehooks-ts";
+import { useClickAway } from "react-use";
 import { useAppDispatch, useAppSelector } from "../../../../app/hooks";
 import {
   changeEditableItem,
@@ -21,7 +21,7 @@ const ListView = () => {
   );
   const editableItemId = useAppSelector(selectEditableItemId);
 
-  useOnClickOutside(containerRef, () => {
+  useClickAway(containerRef, () => {
     dispatch(changeEditableItem(undefined));
   });
 

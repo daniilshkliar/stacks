@@ -1,5 +1,5 @@
 import { memo, useRef, useState } from "react";
-import { useOnClickOutside } from "usehooks-ts";
+import { useClickAway } from "react-use";
 import { useAppDispatch } from "../../../../../app/hooks";
 import { updateListTitle } from "../../../model/listSlice";
 import TextInput from "../../../../../elements/Inputs/TextInput/TextInput";
@@ -17,7 +17,7 @@ const ListViewTitle = memo(({ listId, listTitle }: ListViewTitleProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isEditable, setEditable] = useState(false);
 
-  useOnClickOutside(containerRef, () => {
+  useClickAway(containerRef, () => {
     if (!listTitle) {
       dispatch(updateListTitle({ id: listId, newTitle: "List" }));
     }
