@@ -1,4 +1,10 @@
-import { createSlice, nanoid, PayloadAction } from "@reduxjs/toolkit";
+import {
+  createAsyncThunk,
+  createSlice,
+  current,
+  nanoid,
+  PayloadAction,
+} from "@reduxjs/toolkit";
 import { RootState } from "../../../app/store";
 import { NormalizedEntity } from "../../../utils/types";
 import { List, ListItem, ListItemStatus, ListType } from "./listTypes";
@@ -6,12 +12,21 @@ import {
   createNormalizedObject,
   deleteNormalizedObjects,
 } from "../../../utils/methods";
+import {
+  deleteListFromDB,
+  deleteListItemFromDB,
+  putListInDB,
+  putListItemInDB,
+  readListItemsFromDB,
+  readListsFromDB,
+} from "./listDatabase";
 
 interface ListState {
   lists: NormalizedEntity<List>;
   listItems: NormalizedEntity<ListItem>;
   openList?: string;
   editableItem?: string;
+  isLoading: boolean;
 }
 
 const initialState: ListState = {
@@ -23,7 +38,18 @@ const initialState: ListState = {
     byId: {},
     allIds: [],
   },
+  isLoading: true,
 };
+
+export const getListStateFromDB = createAsyncThunk(
+  "lists/getListStateFromDB",
+  async () => {
+    const lists = await readListsFromDB();
+    const listItems = await readListItemsFromDB();
+
+    return { lists, listItems };
+  }
+);
 
 export const listSlice = createSlice({
   name: "lists",
@@ -34,6 +60,8 @@ export const listSlice = createSlice({
         createNormalizedObject(state.lists, action.payload.id, action.payload);
 
         state.openList = action.payload.id;
+
+        putListInDB(action.payload, current(state.lists.allIds));
       },
       prepare: () => {
         const newList: List = {
@@ -52,25 +80,38 @@ export const listSlice = createSlice({
       state,
       action: PayloadAction<{ id: string; newTitle: string }>
     ) => {
-      state.lists.byId[action.payload.id].title = action.payload.newTitle;
+      const list = state.lists.byId[action.payload.id];
+
+      list.title = action.payload.newTitle;
+
+      putListInDB(current(list));
     },
     updateListType: (
       state,
       action: PayloadAction<{ id: string; newType: ListType }>
     ) => {
-      state.lists.byId[action.payload.id].type = action.payload.newType;
+      const list = state.lists.byId[action.payload.id];
+
+      list.type = action.payload.newType;
+
+      putListInDB(current(list));
     },
     deleteList: (state, action: PayloadAction<string>) => {
-      deleteNormalizedObjects(
-        state.listItems,
-        state.lists.byId[action.payload].items
-      );
+      const listItemsToDelete = state.lists.byId[action.payload].items;
 
+      deleteNormalizedObjects(state.listItems, listItemsToDelete);
       deleteNormalizedObjects(state.lists, [action.payload]);
 
       if (state.openList === action.payload) {
         state.openList = undefined;
       }
+
+      deleteListFromDB(
+        action.payload,
+        state.lists.allIds,
+        current(listItemsToDelete),
+        state.listItems.allIds
+      );
     },
     createListItem: {
       reducer: (
@@ -83,6 +124,12 @@ export const listSlice = createSlice({
 
         state.lists.byId[listId].items.push(newListItem.id);
         state.editableItem = newListItem.id;
+
+        putListItemInDB(
+          newListItem,
+          current(state.listItems.allIds),
+          current(state.lists.byId[listId])
+        );
       },
       prepare: (listId: string) => {
         const newListItem: ListItem = {
@@ -103,29 +150,38 @@ export const listSlice = createSlice({
       state,
       action: PayloadAction<{ id: string; newText: string }>
     ) => {
-      state.listItems.byId[action.payload.id].text = action.payload.newText;
+      const listItem = state.listItems.byId[action.payload.id];
+
+      listItem.text = action.payload.newText;
+
+      putListItemInDB(current(listItem));
     },
     updateListItemStatus: (
       state,
       action: PayloadAction<{ id: string; newStatus: ListItemStatus }>
     ) => {
-      state.listItems.byId[action.payload.id].status = action.payload.newStatus;
+      const listItem = state.listItems.byId[action.payload.id];
+
+      listItem.status = action.payload.newStatus;
+
+      putListItemInDB(current(listItem));
     },
     deleteListItem: (
       state,
       action: PayloadAction<{ listId: string; listItemId: string }>
     ) => {
       const { listId, listItemId } = action.payload;
+      const list = state.lists.byId[listId];
 
       deleteNormalizedObjects(state.listItems, [listItemId]);
 
-      state.lists.byId[listId].items = state.lists.byId[listId].items.filter(
-        (id) => id !== listItemId
-      );
+      list.items = list.items.filter((id) => id !== listItemId);
 
       if (state.editableItem === listItemId) {
         state.editableItem = undefined;
       }
+
+      deleteListItemFromDB(listItemId, state.listItems.allIds, current(list));
     },
     changeOpenList: (state, action: PayloadAction<string | undefined>) => {
       state.openList = action.payload;
@@ -141,10 +197,29 @@ export const listSlice = createSlice({
         state.lists.byId[state.openList].items = state.lists.byId[
           state.openList
         ].items.filter((id) => id !== state.editableItem);
+
+        deleteListItemFromDB(
+          state.editableItem,
+          state.listItems.allIds,
+          current(state.lists.byId[state.openList])
+        );
       }
 
       state.editableItem = action.payload;
     },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(getListStateFromDB.pending, (state) => {
+      state.isLoading = true;
+    });
+    builder.addCase(getListStateFromDB.fulfilled, (state, action) => {
+      state.lists = action.payload.lists;
+      state.listItems = action.payload.listItems;
+      state.isLoading = false;
+    });
+    builder.addCase(getListStateFromDB.rejected, (state, action) => {
+      state.isLoading = false;
+    });
   },
 });
 

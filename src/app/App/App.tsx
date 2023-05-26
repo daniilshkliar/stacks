@@ -1,4 +1,4 @@
-import { useAppSelector } from "../hooks";
+import { useAppSelector, useDatabase } from "../hooks";
 import { selectLocation } from "../../features/navigation/model/navigationSlice";
 import AccountScreen from "../../screens/AccountScreen";
 import ListViewScreen from "../../screens/ListViewScreen";
@@ -9,6 +9,8 @@ import styles from "./App.module.scss";
 
 const App = () => {
   const location = useAppSelector(selectLocation);
+
+  useDatabase();
 
   return (
     <>

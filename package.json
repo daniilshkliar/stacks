@@ -12,11 +12,12 @@
   "dependencies": {
     "@reduxjs/toolkit": "^1.9.5",
     "classnames": "^2.3.2",
+    "idb": "^7.1.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-redux": "^8.0.5",
     "react-transition-group": "^4.4.5",
-    "usehooks-ts": "^2.9.1"
+    "react-use": "^17.4.0"
   },
   "devDependencies": {
     "@types/react": "^18.0.28",

@@ -1,11 +1,24 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffectOnce } from "react-use";
 import { useDispatch, useSelector, TypedUseSelectorHook } from "react-redux";
 import { RootState, AppDispatch } from "./store";
 import { DirectionType } from "../utils/types";
+import { getListStateFromDB } from "../features/lists/model/listSlice";
+import { initializeListDB } from "../features/lists/model/listDatabase";
 
 export const useAppDispatch: () => AppDispatch = useDispatch;
 
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
+
+export const useDatabase = () => {
+  const dispatch = useAppDispatch();
+
+  useEffectOnce(() => {
+    initializeListDB();
+
+    dispatch(getListStateFromDB());
+  });
+};
 
 export const usePosition = (
   preventOnScroll?: React.RefObject<HTMLDivElement>
