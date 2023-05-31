@@ -36,5 +36,11 @@ const pwaOptions: Partial<VitePWAOptions> = {
 };
 
 export default defineConfig({
+  server: {
+    https: {
+      key: "./cert/cert-key.pem",
+      cert: "./cert/cert.pem",
+    },
+  },
   plugins: [react(), VitePWA(pwaOptions)],
 });
