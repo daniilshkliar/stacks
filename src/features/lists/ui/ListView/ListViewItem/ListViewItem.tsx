@@ -10,6 +10,7 @@ import TextInput from "../../../../../elements/Inputs/TextInput/TextInput";
 import Swiper from "../../../../../elements/Swiper/Swiper";
 
 import styles from "./ListViewItem.module.scss";
+import DashIcon from "../../../../../assets/icons/dash-icon.svg";
 
 interface ListViewItemProps {
   item: ListItem;
@@ -89,7 +90,8 @@ const ListViewItem = memo(
             dispatch(changeEditableItem(item.id));
           }}
         >
-          {item.text}
+          {!item.done && <img src={DashIcon} alt="dash" draggable="false" />}
+          <div>{item.text}</div>
         </div>
       </Swiper>
     );

@@ -43,7 +43,11 @@ const Swiper = memo(
     const [active, setActive] = useState<DirectionType>();
 
     useEffect(() => {
-      if (vibrate) {
+      if (
+        vibrate &&
+        ((active === "left" && !disableLeftSwipe) ||
+          (active === "right" && !disableRightSwipe))
+      ) {
         navigator.vibrate(20);
       }
     }, [active]);

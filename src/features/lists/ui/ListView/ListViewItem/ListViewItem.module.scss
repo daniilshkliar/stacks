@@ -2,14 +2,20 @@
 
 .item {
   min-height: 2.2rem;
+  display: flex;
   padding: 0.3rem 1.3rem;
   background-color: vars.$background;
   font-size: vars.$font-size--m;
   word-wrap: break-word;
   transition: background-color 50ms;
 
+  &:hover,
   &:active {
     background-color: vars.$disabled--main;
+  }
+
+  & img {
+    width: 1.4rem;
   }
 }
 
