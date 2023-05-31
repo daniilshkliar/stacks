@@ -5,7 +5,7 @@ $font-size--s: 1rem;
 
 $background: #fffffe;
 $primary--main: #234e70;
-$secondary--main: #faf8bf;
+$secondary--main: #f5b28c;
 $error--main: #d32f2f;
 $error--light: #ef5350;
 $error--dark: #c62828;
@@ -24,10 +24,10 @@ $text--dark: #9ca1aa;
 $text--active: #181d22;
 $disabled--main: #fafafa;
 
-$primary--main--filter: brightness(0) saturate(100%) invert(25%) sepia(9%)
-  saturate(3754%) hue-rotate(165deg) brightness(98%) contrast(88%);
-$secondary--main--filter: brightness(0) saturate(100%) invert(88%) sepia(19%)
-  saturate(520%) hue-rotate(355deg) brightness(111%) contrast(96%);
+$primary--main--filter: brightness(0) saturate(100%) invert(25%) sepia(6%)
+  saturate(5581%) hue-rotate(164deg) brightness(94%) contrast(85%);
+$secondary--main--filter: brightness(0) saturate(100%) invert(87%) sepia(15%)
+  saturate(1895%) hue-rotate(311deg) brightness(100%) contrast(92%);
 $text--light--filter: brightness(0) saturate(100%) invert(100%) sepia(1%)
   saturate(1619%) hue-rotate(209deg) brightness(116%) contrast(83%);
 $text--dark--filter: brightness(0) saturate(100%) invert(73%) sepia(9%)
