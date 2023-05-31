@@ -8,6 +8,7 @@ interface IconButtonProps {
   variant?: "outlined" | "contained";
   size?: "s" | "m" | "l";
   disabled?: boolean;
+  vibrate?: boolean;
   className?: string;
   onClick: () => void;
 }
@@ -18,6 +19,7 @@ const IconButton = memo(
     variant = "outlined",
     size = "m",
     disabled,
+    vibrate,
     className,
     onClick,
   }: IconButtonProps) => {
@@ -33,7 +35,13 @@ const IconButton = memo(
             [styles[`${variant}_disabled`]]: disabled,
           }
         )}
-        onClick={onClick}
+        onClick={() => {
+          if (vibrate) {
+            navigator.vibrate(25);
+          }
+
+          onClick();
+        }}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
             onClick();

@@ -9,6 +9,7 @@ interface TextButtonProps {
   size?: "s" | "m" | "l";
   type?: "error" | "warning" | "success" | "info";
   disabled?: boolean;
+  vibrate?: boolean;
   className?: string;
   onClick: () => void;
 }
@@ -20,6 +21,7 @@ const TextButton = memo(
     size = "m",
     type,
     disabled,
+    vibrate,
     className,
     onClick,
   }: TextButtonProps) => {
@@ -36,7 +38,13 @@ const TextButton = memo(
             [styles[`${variant}_disabled`]]: disabled,
           }
         )}
-        onClick={onClick}
+        onClick={() => {
+          if (vibrate) {
+            navigator.vibrate(25);
+          }
+
+          onClick();
+        }}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
             onClick();

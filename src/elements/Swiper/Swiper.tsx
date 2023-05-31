@@ -1,4 +1,4 @@
-import { memo, useCallback, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 import classNames from "classnames";
 import Carousel from "../Carousel/Carousel";
 import { DirectionType } from "../../utils/types";
@@ -17,6 +17,7 @@ interface SwiperProps {
   onRightSwipeClass?: string;
   onLeftSwipeActiveClass?: string;
   onRightSwipeActiveClass?: string;
+  vibrate?: boolean;
   onLeftSwipe?: () => void;
   onRightSwipe?: () => void;
 }
@@ -34,11 +35,18 @@ const Swiper = memo(
     onRightSwipeClass,
     onLeftSwipeActiveClass,
     onRightSwipeActiveClass,
+    vibrate,
     onLeftSwipe,
     onRightSwipe,
   }: SwiperProps) => {
     const [direction, setDirection] = useState<DirectionType>();
     const [active, setActive] = useState<DirectionType>();
+
+    useEffect(() => {
+      if (vibrate) {
+        navigator.vibrate(20);
+      }
+    }, [active]);
 
     const onSwipe = useCallback((newIndex: number) => {
       if (newIndex === -1 && onRightSwipe) {

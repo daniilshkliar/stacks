@@ -16,7 +16,7 @@ const HomeScreen = () => {
   return (
     <Carousel
       slideIndex={location === "calendar" ? 0 : 1}
-      threshold={70}
+      threshold={50}
       onSwipe={(newIndex) => {
         dispatch(goTo(newIndex === 0 ? "calendar" : "lists"));
       }}

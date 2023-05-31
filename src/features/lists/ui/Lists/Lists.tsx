@@ -55,6 +55,7 @@ const Lists = ({ containerRef }: ListsProps) => {
             containerRef={containerRef}
             onLeftSwipeIcon={GarbageIcon}
             disableRightSwipe
+            vibrate
             onLeftSwipe={() => {
               setListToDelete(list);
             }}

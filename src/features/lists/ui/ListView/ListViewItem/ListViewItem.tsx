@@ -73,6 +73,7 @@ const ListViewItem = memo(
         onRightSwipeClass={onRightSwipeClass}
         onLeftSwipeActiveClass={onLeftSwipeActiveClass}
         onRightSwipeActiveClass={onRightSwipeActiveClass}
+        vibrate
         onLeftSwipe={() => {
           onLeftSwipe && onLeftSwipe(item);
         }}

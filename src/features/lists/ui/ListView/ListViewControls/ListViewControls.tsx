@@ -61,6 +61,7 @@ const ListViewControls = () => {
       <IconButton
         size="m"
         icon={openList.type === "cycled" ? CycleIcon : ListIcon}
+        vibrate
         onClick={changeListType}
       />
 
