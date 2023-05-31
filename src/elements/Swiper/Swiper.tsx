@@ -1,4 +1,4 @@
-import { memo, useState } from "react";
+import { memo, useCallback, useState } from "react";
 import classNames from "classnames";
 import Carousel from "../Carousel/Carousel";
 import { DirectionType } from "../../utils/types";
@@ -9,15 +9,16 @@ interface SwiperProps {
   children: React.ReactNode;
   containerRef?: React.RefObject<HTMLDivElement>;
   animationDuration?: number;
-  permittedDirections?: DirectionType[];
-  leftIcon?: string;
-  rightIcon?: string;
-  leftClass?: string;
-  rightClass?: string;
-  leftActiveClass?: string;
-  rightActiveClass?: string;
-  onLeft?: () => void;
-  onRight?: () => void;
+  disableLeftSwipe?: boolean;
+  disableRightSwipe?: boolean;
+  onLeftSwipeIcon?: string;
+  onRightSwipeIcon?: string;
+  onLeftSwipeClass?: string;
+  onRightSwipeClass?: string;
+  onLeftSwipeActiveClass?: string;
+  onRightSwipeActiveClass?: string;
+  onLeftSwipe?: () => void;
+  onRightSwipe?: () => void;
 }
 
 const Swiper = memo(
@@ -25,57 +26,66 @@ const Swiper = memo(
     children,
     containerRef,
     animationDuration,
-    permittedDirections,
-    leftIcon,
-    rightIcon,
-    leftClass,
-    rightClass,
-    leftActiveClass,
-    rightActiveClass,
-    onLeft,
-    onRight,
+    disableLeftSwipe,
+    disableRightSwipe,
+    onLeftSwipeIcon,
+    onRightSwipeIcon,
+    onLeftSwipeClass,
+    onRightSwipeClass,
+    onLeftSwipeActiveClass,
+    onRightSwipeActiveClass,
+    onLeftSwipe,
+    onRightSwipe,
   }: SwiperProps) => {
     const [direction, setDirection] = useState<DirectionType>();
     const [active, setActive] = useState<DirectionType>();
 
-    const onSwipe = (newIndex: number) => {
-      if (newIndex === -1 && onLeft) {
-        onLeft();
-      } else if (newIndex === 1 && onRight) {
-        onRight();
+    const onSwipe = useCallback((newIndex: number) => {
+      if (newIndex === -1 && onRightSwipe) {
+        onRightSwipe();
+      } else if (newIndex === 1 && onLeftSwipe) {
+        onLeftSwipe();
       }
-    };
+    }, []);
 
     return (
       <div className={styles.container}>
         {direction && (
           <div
             className={classNames(styles.background, {
-              [styles.left]: direction === "right",
-              [styles.right]: direction === "left",
-              [styles.leftActive]: active === "right",
-              [styles.rightActive]: active === "left",
-              [leftClass || ""]: direction === "right",
-              [rightClass || ""]: direction === "left",
-              [leftActiveClass || ""]: active === "right",
-              [rightActiveClass || ""]: active === "left",
+              [styles.onLeftSwipe]: !disableLeftSwipe && direction === "left",
+              [styles.onRightSwipe]:
+                !disableRightSwipe && direction === "right",
+              [styles.onLeftSwipeActive]:
+                !disableLeftSwipe && active === "left",
+              [styles.onRightSwipeActive]:
+                !disableRightSwipe && active === "right",
+              [onLeftSwipeClass || ""]:
+                !disableLeftSwipe && direction === "left",
+              [onRightSwipeClass || ""]:
+                !disableRightSwipe && direction === "right",
+              [onLeftSwipeActiveClass || ""]:
+                !disableLeftSwipe && active === "left",
+              [onRightSwipeActiveClass || ""]:
+                !disableRightSwipe && active === "right",
             })}
           >
             <div className={styles.icon}>
-              {direction === "right"
-                ? leftIcon && (
-                    <img src={leftIcon} alt="left" draggable="false" />
+              {direction === "left"
+                ? onLeftSwipeIcon && (
+                    <img src={onLeftSwipeIcon} alt="left" draggable="false" />
                   )
-                : rightIcon && (
-                    <img src={rightIcon} alt="right" draggable="false" />
+                : onRightSwipeIcon && (
+                    <img src={onRightSwipeIcon} alt="right" draggable="false" />
                   )}
             </div>
           </div>
         )}
 
         <Carousel
-          permittedDirections={permittedDirections}
           preventOnScroll={containerRef}
+          disableLeftSwipe={disableLeftSwipe}
+          disableRightSwipe={disableRightSwipe}
           animationDuration={animationDuration}
           noBorderLimit
           maxContent

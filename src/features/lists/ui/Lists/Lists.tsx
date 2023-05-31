@@ -1,6 +1,7 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../../app/hooks";
 import { changeOpenList, deleteList, selectLists } from "../../model/listSlice";
+import { List } from "../../model/listTypes";
 import { goTo } from "../../../navigation/model/navigationSlice";
 import Swiper from "../../../../elements/Swiper/Swiper";
 import Dialog from "../../../../elements/Dialog/Dialog";
@@ -9,12 +10,23 @@ import TextButton from "../../../../elements/Buttons/TextButton/TextButton";
 import styles from "./Lists.module.scss";
 import GarbageIcon from "../../../../assets/icons/garbage-bin-icon.svg";
 
-const Lists = () => {
+interface ListsProps {
+  containerRef: React.RefObject<HTMLDivElement>;
+}
+
+const Lists = ({ containerRef }: ListsProps) => {
   const dispatch = useAppDispatch();
-  const containerRef = useRef<HTMLDivElement>(null);
   const lists = useAppSelector(selectLists);
-  const [listToDelete, setListToDelete] = useState<string>();
-  const [listToDeleteTitle, setListToDeleteTitle] = useState<string>("");
+  const [listToDelete, setListToDelete] = useState<List>();
+
+  const handleDeleteList = () => {
+    if (!listToDelete) {
+      return;
+    }
+
+    dispatch(deleteList(listToDelete.id));
+    setListToDelete(undefined);
+  };
 
   return (
     <>
@@ -29,16 +41,11 @@ const Lists = () => {
             type="error"
             size="s"
             text="Delete"
-            onClick={() => {
-              if (listToDelete) {
-                dispatch(deleteList(listToDelete));
-                setListToDelete(undefined);
-              }
-            }}
+            onClick={handleDeleteList}
           />
         }
       >
-        Delete <div className={styles.bold}>{listToDeleteTitle}</div>?
+        Delete <div className={styles.bold}>{listToDelete?.title}</div>?
       </Dialog>
 
       <div ref={containerRef} className={styles.container}>
@@ -46,11 +53,10 @@ const Lists = () => {
           <Swiper
             key={list.id}
             containerRef={containerRef}
-            rightIcon={GarbageIcon}
-            permittedDirections={["left"]}
-            onRight={() => {
-              setListToDelete(list.id);
-              setListToDeleteTitle(list.title);
+            onLeftSwipeIcon={GarbageIcon}
+            disableRightSwipe
+            onLeftSwipe={() => {
+              setListToDelete(list);
             }}
           >
             <div

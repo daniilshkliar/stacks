@@ -7,7 +7,7 @@ import {
 } from "@reduxjs/toolkit";
 import { RootState } from "../../../app/store";
 import { NormalizedEntity } from "../../../utils/types";
-import { List, ListItem, ListItemStatus, ListType } from "./listTypes";
+import { List, ListItem, ListType } from "./listTypes";
 import {
   createNormalizedObject,
   deleteNormalizedObjects,
@@ -38,7 +38,7 @@ const initialState: ListState = {
     byId: {},
     allIds: [],
   },
-  isLoading: true,
+  isLoading: false,
 };
 
 export const getListStateFromDB = createAsyncThunk(
@@ -94,6 +94,10 @@ export const listSlice = createSlice({
 
       list.type = action.payload.newType;
 
+      if (state.editableItem) {
+        state.editableItem = undefined;
+      }
+
       putListInDB(current(list));
     },
     deleteList: (state, action: PayloadAction<string>) => {
@@ -135,7 +139,7 @@ export const listSlice = createSlice({
         const newListItem: ListItem = {
           id: nanoid(),
           text: "",
-          status: 0,
+          done: false,
         };
 
         return {
@@ -158,11 +162,11 @@ export const listSlice = createSlice({
     },
     updateListItemStatus: (
       state,
-      action: PayloadAction<{ id: string; newStatus: ListItemStatus }>
+      action: PayloadAction<{ id: string; done: boolean }>
     ) => {
       const listItem = state.listItems.byId[action.payload.id];
 
-      listItem.status = action.payload.newStatus;
+      listItem.done = action.payload.done;
 
       putListItemInDB(current(listItem));
     },
@@ -192,17 +196,13 @@ export const listSlice = createSlice({
         state.editableItem &&
         !state.listItems.byId[state.editableItem].text.trim()
       ) {
-        deleteNormalizedObjects(state.listItems, [state.editableItem]);
-
-        state.lists.byId[state.openList].items = state.lists.byId[
-          state.openList
-        ].items.filter((id) => id !== state.editableItem);
-
-        deleteListItemFromDB(
-          state.editableItem,
-          state.listItems.allIds,
-          current(state.lists.byId[state.openList])
-        );
+        listSlice.caseReducers.deleteListItem(state, {
+          payload: {
+            listId: state.openList,
+            listItemId: state.editableItem,
+          },
+          type: action.type,
+        });
       }
 
       state.editableItem = action.payload;
@@ -217,7 +217,7 @@ export const listSlice = createSlice({
       state.listItems = action.payload.listItems;
       state.isLoading = false;
     });
-    builder.addCase(getListStateFromDB.rejected, (state, action) => {
+    builder.addCase(getListStateFromDB.rejected, (state) => {
       state.isLoading = false;
     });
   },
@@ -229,12 +229,8 @@ export const selectLists = (state: RootState): List[] => {
 
 export const selectListItemsByListId = (
   state: RootState,
-  listId: string | undefined
+  listId: string
 ): ListItem[] => {
-  if (!listId) {
-    return [];
-  }
-
   return state.lists.lists.byId[listId].items.map(
     (id) => state.lists.listItems.byId[id]
   );

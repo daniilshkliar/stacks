@@ -8,3 +8,8 @@ export interface NormalizedEntity<T> {
   byId: Map<T>;
   allIds: Array<string>;
 }
+
+export interface Size {
+  width: number;
+  height: number;
+}

@@ -12,6 +12,7 @@ interface TextInputProps {
   className?: string;
   setValue: (newValue: string) => void;
   onEnterPress?: () => void;
+  onBlur?: () => void;
 }
 
 const TextInput = memo(
@@ -24,6 +25,7 @@ const TextInput = memo(
     className,
     setValue,
     onEnterPress,
+    onBlur,
   }: TextInputProps) => {
     const ref = useRef<HTMLTextAreaElement>(null);
 
@@ -43,18 +45,22 @@ const TextInput = memo(
       <div className={styles.inputContainer}>
         <textarea
           ref={ref}
+          name="text"
           className={classNames(styles.input, className)}
           value={value}
           placeholder={placeholder}
           rows={1}
           autoFocus={autoFocus}
           disabled={disabled}
-          onChange={(e) => setValue(e.target.value)}
+          onChange={(e) => {
+            setValue(e.target.value);
+          }}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !disabled && onEnterPress) {
               onEnterPress();
             }
           }}
+          onBlur={onBlur}
         />
 
         <div

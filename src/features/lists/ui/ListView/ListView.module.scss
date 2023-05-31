@@ -5,3 +5,9 @@
   padding: 0.8rem 0;
   overflow-y: auto;
 }
+
+.bold {
+  display: inline-block;
+  color: vars.$primary--main;
+  font-weight: bold;
+}

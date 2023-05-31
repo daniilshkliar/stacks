@@ -1,5 +1,4 @@
-import { memo, useRef, useState } from "react";
-import { useClickAway } from "react-use";
+import { memo, useState } from "react";
 import { useAppDispatch } from "../../../../../app/hooks";
 import { updateListTitle } from "../../../model/listSlice";
 import TextInput from "../../../../../elements/Inputs/TextInput/TextInput";
@@ -14,19 +13,18 @@ interface ListViewTitleProps {
 
 const ListViewTitle = memo(({ listId, listTitle }: ListViewTitleProps) => {
   const dispatch = useAppDispatch();
-  const containerRef = useRef<HTMLDivElement>(null);
   const [isEditable, setEditable] = useState(false);
 
-  useClickAway(containerRef, () => {
+  const finishEditing = () => {
     if (!listTitle) {
       dispatch(updateListTitle({ id: listId, newTitle: "List" }));
     }
 
     setEditable(false);
-  });
+  };
 
   return isEditable ? (
-    <div ref={containerRef} className={styles.inputContainer}>
+    <div className={styles.inputContainer}>
       <TextInput
         value={listTitle}
         placeholder="List"
@@ -36,6 +34,7 @@ const ListViewTitle = memo(({ listId, listTitle }: ListViewTitleProps) => {
         setValue={(newValue) => {
           dispatch(updateListTitle({ id: listId, newTitle: newValue }));
         }}
+        onBlur={finishEditing}
       />
     </div>
   ) : (

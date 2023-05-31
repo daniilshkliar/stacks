@@ -1,8 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { useEffectOnce } from "react-use";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector, TypedUseSelectorHook } from "react-redux";
 import { RootState, AppDispatch } from "./store";
 import { DirectionType } from "../utils/types";
+import {
+  updateKeyboardHeight,
+  updateRelativeToKeyboardStyle,
+} from "../features/settings/model/settingsSlice";
 import { getListStateFromDB } from "../features/lists/model/listSlice";
 import { initializeListDB } from "../features/lists/model/listDatabase";
 
@@ -12,12 +15,55 @@ export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 
 export const useDatabase = () => {
   const dispatch = useAppDispatch();
+  const isFirstRender = useRef(true);
 
-  useEffectOnce(() => {
-    initializeListDB();
+  useEffect(() => {
+    if (isFirstRender.current) {
+      initializeListDB();
 
-    dispatch(getListStateFromDB());
-  });
+      dispatch(getListStateFromDB());
+
+      isFirstRender.current = false;
+    }
+  }, []);
+};
+
+export const useMobileKeyboard = () => {
+  const dispatch = useAppDispatch();
+  const keyboardHeight = useRef(0);
+
+  const updateRelativeStyle = () => {
+    if (keyboardHeight.current && window.visualViewport) {
+      dispatch(
+        updateRelativeToKeyboardStyle({
+          bottom: keyboardHeight.current - window.visualViewport.offsetTop,
+        })
+      );
+    } else {
+      dispatch(updateRelativeToKeyboardStyle(undefined));
+    }
+  };
+
+  const onResize = () => {
+    if (window.visualViewport) {
+      keyboardHeight.current =
+        window.innerHeight - window.visualViewport.height;
+
+      dispatch(updateKeyboardHeight(keyboardHeight.current));
+      updateRelativeStyle();
+    }
+  };
+
+  useEffect(() => {
+    window.visualViewport?.addEventListener("resize", onResize);
+    window.visualViewport?.addEventListener("scroll", updateRelativeStyle);
+    onResize();
+
+    return () => {
+      window.visualViewport?.removeEventListener("resize", onResize);
+      window.visualViewport?.removeEventListener("scroll", updateRelativeStyle);
+    };
+  }, []);
 };
 
 export const usePosition = (
@@ -29,17 +75,17 @@ export const usePosition = (
   const [y1, setY1] = useState(0);
   const [y2, setY2] = useState(0);
 
-  const mouseMove = useCallback((e: MouseEvent) => {
+  const mouseMove = (e: MouseEvent) => {
     setX2(e.clientX);
     setY2(e.clientY);
-  }, []);
+  };
 
-  const touchMove = useCallback((e: TouchEvent) => {
+  const touchMove = (e: TouchEvent) => {
     setX2(e.changedTouches[0].clientX);
     setY2(e.changedTouches[0].clientY);
-  }, []);
+  };
 
-  const release = useCallback(() => {
+  const release = () => {
     setCatched(false);
 
     document.removeEventListener("touchmove", touchMove);
@@ -47,39 +93,33 @@ export const usePosition = (
     document.removeEventListener("mousemove", mouseMove);
     document.removeEventListener("mouseup", release);
     preventOnScroll?.current?.removeEventListener("scroll", release);
-  }, [touchMove, mouseMove]);
+  };
 
-  const mouseDown = useCallback(
-    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-      setCatched(true);
+  const mouseDown = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    setCatched(true);
 
-      setX1(e.clientX);
-      setY1(e.clientY);
-      setX2(e.clientX);
-      setY2(e.clientY);
+    setX1(e.clientX);
+    setY1(e.clientY);
+    setX2(e.clientX);
+    setY2(e.clientY);
 
-      document.addEventListener("mousemove", mouseMove);
-      document.addEventListener("mouseup", release);
-      preventOnScroll?.current?.addEventListener("scroll", release);
-    },
-    [mouseMove, release]
-  );
+    document.addEventListener("mousemove", mouseMove);
+    document.addEventListener("mouseup", release);
+    preventOnScroll?.current?.addEventListener("scroll", release);
+  };
 
-  const touchStart = useCallback(
-    (e: React.TouchEvent<HTMLDivElement>) => {
-      setCatched(true);
+  const touchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    setCatched(true);
 
-      setX1(e.targetTouches[0].clientX);
-      setY1(e.targetTouches[0].clientY);
-      setX2(e.targetTouches[0].clientX);
-      setY2(e.targetTouches[0].clientY);
+    setX1(e.targetTouches[0].clientX);
+    setY1(e.targetTouches[0].clientY);
+    setX2(e.targetTouches[0].clientX);
+    setY2(e.targetTouches[0].clientY);
 
-      document.addEventListener("touchmove", touchMove);
-      document.addEventListener("touchend", release);
-      preventOnScroll?.current?.addEventListener("scroll", release);
-    },
-    [touchMove, release]
-  );
+    document.addEventListener("touchmove", touchMove);
+    document.addEventListener("touchend", release);
+    preventOnScroll?.current?.addEventListener("scroll", release);
+  };
 
   return {
     isCatched,
@@ -89,7 +129,6 @@ export const usePosition = (
     y2,
     mouseDown,
     touchStart,
-    release,
   };
 };
 
@@ -98,7 +137,8 @@ export const useSwipe = (
   amountOfSlides = 1,
   threshold = 100,
   noBorderLimit = false,
-  permittedDirections?: DirectionType[],
+  disableLeftSwipe = false,
+  disableRightSwipe = false,
   preventOnScroll?: React.RefObject<HTMLDivElement>,
   onDirectionChange?: (direction: DirectionType | undefined) => void,
   onThresholdDirectionChange?: (
@@ -110,11 +150,10 @@ export const useSwipe = (
   const sliderWidth = useRef(0);
   const maxOuterWidth = useRef(0);
   const currentSlideIndex = useRef(slideIndex);
-  const isSwiped = useRef(false);
+  const direction = useRef<DirectionType>();
+  const thresholdDirection = useRef<DirectionType>();
   const { isCatched, x1, x2, mouseDown, touchStart } =
     usePosition(preventOnScroll);
-  const [direction, setDirection] = useState<DirectionType>();
-  const [thresholdDirection, setThresholdDirection] = useState<DirectionType>();
   const [translateX, setTranslateX] = useState(0);
 
   useEffect(() => {
@@ -122,111 +161,124 @@ export const useSwipe = (
       sliderWidth.current = ref.current.clientWidth;
       maxOuterWidth.current = sliderWidth.current * (amountOfSlides - 1);
     }
-  }, [ref]);
+  }, [ref, amountOfSlides]);
 
   useEffect(() => {
     currentSlideIndex.current = slideIndex;
     setTranslateX(-currentSlideIndex.current * sliderWidth.current);
   }, [slideIndex]);
 
-  const changeDirection = useCallback(
-    (
-      deltaX: number,
-      threshold: number,
-      direction: DirectionType | undefined,
-      callback: (direction: DirectionType | undefined) => void
-    ) => {
-      if (deltaX > threshold) {
-        if (direction !== "right") {
-          callback("right");
-        }
-      } else if (deltaX < -threshold) {
-        if (direction !== "left") {
-          callback("left");
-        }
-      } else {
-        if (direction !== undefined) {
-          callback(undefined);
-        }
+  const calculateDirection = (
+    deltaX: number,
+    directionForComparison: DirectionType | undefined,
+    threshold: number,
+    callback: (newDirection: DirectionType | undefined) => void
+  ) => {
+    if (deltaX > threshold) {
+      if (directionForComparison !== "right") {
+        callback("right");
       }
-    },
-    []
-  );
+    } else if (deltaX < -threshold) {
+      if (directionForComparison !== "left") {
+        callback("left");
+      }
+    } else {
+      if (directionForComparison !== undefined) {
+        callback(undefined);
+      }
+    }
+  };
 
-  const swipe = useCallback((direction: DirectionType) => {
-    isSwiped.current = true;
+  const calculateTranslateX = (deltaX: number) => {
+    const newTranslateX =
+      deltaX - currentSlideIndex.current * sliderWidth.current;
+
+    if (
+      (disableLeftSwipe && newTranslateX < 0) ||
+      (disableRightSwipe && newTranslateX > 0)
+    ) {
+      setTranslateX(0);
+    } else if (noBorderLimit) {
+      setTranslateX(newTranslateX);
+    } else if (newTranslateX > 0) {
+      setTranslateX(0);
+    } else if (newTranslateX < -maxOuterWidth.current) {
+      setTranslateX(-maxOuterWidth.current);
+    } else {
+      setTranslateX(newTranslateX);
+    }
+  };
+
+  const swipe = (direction: DirectionType) => {
+    let newIndex: number | undefined;
 
     switch (direction) {
       case "left":
-        if (currentSlideIndex.current < amountOfSlides - 1) {
-          currentSlideIndex.current += 1;
-          onSwipe && onSwipe(currentSlideIndex.current);
-        } else if (noBorderLimit) {
-          onSwipe && onSwipe(amountOfSlides);
+        if (disableLeftSwipe) {
+          return;
         }
+
+        if (currentSlideIndex.current < amountOfSlides - 1) {
+          newIndex = currentSlideIndex.current += 1;
+        } else if (noBorderLimit) {
+          newIndex = amountOfSlides;
+        }
+
         break;
       case "right":
-        if (currentSlideIndex.current > 0) {
-          currentSlideIndex.current -= 1;
-          onSwipe && onSwipe(currentSlideIndex.current);
-        } else if (noBorderLimit) {
-          onSwipe && onSwipe(-1);
+        if (disableRightSwipe) {
+          return;
         }
+
+        if (currentSlideIndex.current > 0) {
+          newIndex = currentSlideIndex.current -= 1;
+        } else if (noBorderLimit) {
+          newIndex = -1;
+        }
+
         break;
       default:
         break;
     }
-  }, []);
+
+    if (newIndex !== undefined && onSwipe) {
+      onSwipe(newIndex);
+    }
+  };
 
   useEffect(() => {
     const deltaX = x2 - x1;
 
-    if (isCatched) {
-      isSwiped.current = false;
+    calculateDirection(deltaX, direction.current, 0, (newDirection) => {
+      direction.current = newDirection;
+      onDirectionChange && onDirectionChange(direction.current);
+    });
 
-      const newTranslateX =
-        deltaX - currentSlideIndex.current * sliderWidth.current;
-
-      if (noBorderLimit) {
-        if (
-          (!permittedDirections?.includes("left") && newTranslateX < 0) ||
-          (!permittedDirections?.includes("right") && newTranslateX > 0)
-        ) {
-          setTranslateX(0);
-        } else {
-          setTranslateX(newTranslateX);
-        }
-      } else if (newTranslateX > 0) {
-        setTranslateX(0);
-      } else if (newTranslateX < -maxOuterWidth.current) {
-        setTranslateX(-maxOuterWidth.current);
-      } else {
-        setTranslateX(newTranslateX);
+    calculateDirection(
+      deltaX,
+      thresholdDirection.current,
+      threshold,
+      (newDirection) => {
+        thresholdDirection.current = newDirection;
+        onThresholdDirectionChange &&
+          onThresholdDirectionChange(thresholdDirection.current);
       }
+    );
+
+    if (isCatched) {
+      calculateTranslateX(deltaX);
     } else {
-      if (!isSwiped.current && thresholdDirection) {
-        swipe(thresholdDirection);
+      if (thresholdDirection.current) {
+        swipe(thresholdDirection.current);
       }
 
       setTranslateX(-currentSlideIndex.current * sliderWidth.current);
     }
-
-    changeDirection(deltaX, 0, direction, (direction) => {
-      setDirection(direction);
-      onDirectionChange && onDirectionChange(direction);
-    });
-
-    changeDirection(deltaX, threshold, thresholdDirection, (direction) => {
-      setThresholdDirection(direction);
-      onThresholdDirectionChange && onThresholdDirectionChange(direction);
-    });
-  }, [x1, x2, direction, thresholdDirection, isCatched]);
+  }, [x1, x2, isCatched, disableLeftSwipe, disableRightSwipe]);
 
   return {
     ref,
     isCatched,
-    x1,
-    x2,
     translateX,
     mouseDown,
     touchStart,

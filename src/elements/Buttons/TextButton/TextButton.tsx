@@ -37,7 +37,11 @@ const TextButton = memo(
           }
         )}
         onClick={onClick}
-        onKeyDown={(e) => e.key === "Enter" && onClick()}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            onClick();
+          }
+        }}
       >
         {text}
       </div>

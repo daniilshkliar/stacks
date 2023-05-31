@@ -13,6 +13,10 @@
   }
 }
 
+.done {
+  color: vars.$text--dark;
+}
+
 .inputContainer {
   min-height: 2.2rem;
   padding: 0.3rem 1.3rem calc(0.3rem - 1px);
@@ -20,10 +24,4 @@
 
 .input {
   font-size: vars.$font-size--m;
-}
-
-.bold {
-  display: inline-block;
-  color: vars.$primary--main;
-  font-weight: bold;
 }

@@ -10,7 +10,8 @@ interface CarouselProps {
   slideIndex?: number;
   threshold?: number;
   noBorderLimit?: boolean;
-  permittedDirections?: DirectionType[];
+  disableLeftSwipe?: boolean;
+  disableRightSwipe?: boolean;
   preventOnScroll?: React.RefObject<HTMLDivElement>;
   maxContent?: boolean;
   stopPropagation?: boolean;
@@ -28,7 +29,8 @@ const Carousel = memo(
     slideIndex,
     threshold,
     noBorderLimit,
-    permittedDirections,
+    disableLeftSwipe,
+    disableRightSwipe,
     preventOnScroll,
     maxContent,
     stopPropagation,
@@ -42,7 +44,8 @@ const Carousel = memo(
       Children.count(children),
       threshold,
       noBorderLimit,
-      permittedDirections,
+      disableLeftSwipe,
+      disableRightSwipe,
       preventOnScroll,
       onDirectionChange,
       onThresholdDirectionChange,
@@ -65,7 +68,9 @@ const Carousel = memo(
             transition: isCatched ? "none" : `all ${animationDuration}ms`,
           }}
           onClickCapture={(e) => {
-            stopPropagation && translateX && e.stopPropagation();
+            if (stopPropagation && translateX) {
+              e.stopPropagation();
+            }
           }}
           onMouseDown={mouseDown}
           onTouchStart={touchStart}

@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import {
   goTo,
@@ -9,6 +10,7 @@ import ListScreen from "./ListScreen";
 
 const HomeScreen = () => {
   const dispatch = useAppDispatch();
+  const listsContainerRef = useRef<HTMLDivElement>(null);
   const location = useAppSelector(selectLocation);
 
   return (
@@ -18,9 +20,10 @@ const HomeScreen = () => {
       onSwipe={(newIndex) => {
         dispatch(goTo(newIndex === 0 ? "calendar" : "lists"));
       }}
+      preventOnScroll={listsContainerRef}
     >
       <CalendarScreen />
-      <ListScreen />
+      <ListScreen listsContainerRef={listsContainerRef} />
     </Carousel>
   );
 };

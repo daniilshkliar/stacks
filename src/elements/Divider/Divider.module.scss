@@ -1,0 +1,35 @@
+@use "/src/app/styles/vars.scss";
+
+.container {
+  display: flex;
+  align-items: center;
+  padding: 0.3rem 0.8rem;
+}
+
+.line {
+  width: 50%;
+  height: 1px;
+  margin: 0 0.5rem;
+  background-color: vars.$text--light;
+}
+
+.primaryLine {
+  background-color: vars.$primary--main;
+}
+
+.secondaryLine {
+  background-color: vars.$secondary--main;
+}
+
+.text {
+  font-size: vars.$font-size--s;
+  color: vars.$text--light;
+}
+
+.primaryText {
+  color: vars.$primary--main;
+}
+
+.secondaryText {
+  color: vars.$secondary--main;
+}

@@ -34,7 +34,11 @@ const IconButton = memo(
           }
         )}
         onClick={onClick}
-        onKeyDown={(e) => e.key === "Enter" && onClick()}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            onClick();
+          }
+        }}
       >
         <img src={icon} alt="icon" draggable="false" />
       </div>

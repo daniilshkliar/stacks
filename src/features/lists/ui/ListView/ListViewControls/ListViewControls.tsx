@@ -1,4 +1,6 @@
+import { useCallback } from "react";
 import { useAppDispatch, useAppSelector } from "../../../../../app/hooks";
+import { selectRelativeToKeyboardStyle } from "../../../../settings/model/settingsSlice";
 import {
   changeEditableItem,
   createListItem,
@@ -18,44 +20,55 @@ const ListViewControls = () => {
   const dispatch = useAppDispatch();
   const openList = useAppSelector(selectOpenList);
   const editableItemId = useAppSelector(selectEditableItemId);
+  const relativeToKeyboardStyle = useAppSelector(selectRelativeToKeyboardStyle);
+
+  const finishEditing = useCallback(() => {
+    dispatch(changeEditableItem(undefined));
+  }, []);
+
+  const changeListType = useCallback(() => {
+    if (openList) {
+      dispatch(
+        updateListType({
+          id: openList.id,
+          newType: openList.type === "cycled" ? "default" : "cycled",
+        })
+      );
+    }
+  }, [openList]);
+
+  const addListItem = useCallback(() => {
+    if (openList) {
+      dispatch(createListItem(openList.id));
+    }
+  }, [openList]);
 
   if (openList === undefined) {
     return <></>;
   }
 
   return (
-    <div className={styles.controls}>
+    <div className={styles.controls} style={relativeToKeyboardStyle}>
       {editableItemId && (
         <IconButton
           variant="contained"
           size="m"
           icon={DoubleDoneIcon}
-          onClick={() => {
-            dispatch(changeEditableItem(undefined));
-          }}
+          onClick={finishEditing}
         />
       )}
 
       <IconButton
         size="m"
         icon={openList.type === "cycled" ? CycleIcon : ListIcon}
-        onClick={() => {
-          dispatch(
-            updateListType({
-              id: openList.id,
-              newType: openList.type === "cycled" ? "default" : "cycled",
-            })
-          );
-        }}
+        onClick={changeListType}
       />
 
       <IconButton
         variant="contained"
         size="l"
         icon={PlusIcon}
-        onClick={() => {
-          dispatch(createListItem(openList.id));
-        }}
+        onClick={addListItem}
       />
     </div>
   );

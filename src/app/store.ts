@@ -1,9 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
+import settingsReducer from "../features/settings/model/settingsSlice";
 import navigationReducer from "../features/navigation/model/navigationSlice";
 import listReducer from "../features/lists/model/listSlice";
 
 export const store = configureStore({
   reducer: {
+    settings: settingsReducer,
     navigation: navigationReducer,
     lists: listReducer,
   },

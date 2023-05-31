@@ -1,0 +1,9 @@
+@use "/src/app/styles/vars.scss";
+
+.repeat {
+  background-color: vars.$info--main;
+}
+
+.repeatActive {
+  background-color: vars.$info--light;
+}

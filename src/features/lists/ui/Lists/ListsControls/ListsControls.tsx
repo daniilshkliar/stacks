@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import { useAppDispatch } from "../../../../../app/hooks";
 import { goTo } from "../../../../navigation/model/navigationSlice";
 import { createList } from "../../../model/listSlice";
@@ -9,16 +10,18 @@ import PlusIcon from "../../../../../assets/icons/plus-icon.svg";
 const ListControls = () => {
   const dispatch = useAppDispatch();
 
+  const addList = useCallback(() => {
+    dispatch(createList());
+    dispatch(goTo("list"));
+  }, []);
+
   return (
     <div className={styles.controls}>
       <IconButton
         size="l"
         variant="contained"
         icon={PlusIcon}
-        onClick={() => {
-          dispatch(createList());
-          dispatch(goTo("list"));
-        }}
+        onClick={addList}
       />
     </div>
   );

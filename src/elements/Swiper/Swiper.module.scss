@@ -15,17 +15,17 @@
   transition: all 200ms;
 }
 
-.left {
+.onRightSwipe {
   justify-content: start;
   background: vars.$success--main;
 }
 
-.right {
+.onLeftSwipe {
   justify-content: end;
   background-color: vars.$error--main;
 }
 
-.leftActive {
+.onRightSwipeActive {
   background-color: vars.$success--light;
 
   & div {
@@ -33,7 +33,7 @@
   }
 }
 
-.rightActive {
+.onLeftSwipeActive {
   background-color: vars.$error--light;
 
   & div {

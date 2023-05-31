@@ -1,100 +1,96 @@
-import { memo, useState } from "react";
+import { memo } from "react";
+import classNames from "classnames";
 import { useAppDispatch } from "../../../../../app/hooks";
 import {
   changeEditableItem,
-  deleteListItem,
-  updateListItemStatus,
   updateListItemText,
 } from "../../../model/listSlice";
-import { ListItem, ListItemStatus } from "../../../model/listTypes";
+import { ListItem } from "../../../model/listTypes";
 import TextInput from "../../../../../elements/Inputs/TextInput/TextInput";
-import TextButton from "../../../../../elements/Buttons/TextButton/TextButton";
-import Dialog from "../../../../../elements/Dialog/Dialog";
 import Swiper from "../../../../../elements/Swiper/Swiper";
 
 import styles from "./ListViewItem.module.scss";
-import DoneIcon from "../../../../../assets/icons/done-icon.svg";
-import GarbageIcon from "../../../../../assets/icons/garbage-bin-icon.svg";
 
 interface ListViewItemProps {
   item: ListItem;
-  listId: string;
   isEditableItem: boolean;
   containerRef: React.RefObject<HTMLDivElement>;
+  disableLeftSwipe?: boolean;
+  disableRightSwipe?: boolean;
+  onLeftSwipeIcon?: string;
+  onRightSwipeIcon?: string;
+  onLeftSwipeClass?: string;
+  onRightSwipeClass?: string;
+  onLeftSwipeActiveClass?: string;
+  onRightSwipeActiveClass?: string;
+  onLeftSwipe?: (item: ListItem) => void;
+  onRightSwipe?: (item: ListItem) => void;
 }
 
 const ListViewItem = memo(
-  ({ item, listId, isEditableItem, containerRef }: ListViewItemProps) => {
+  ({
+    item,
+    isEditableItem,
+    containerRef,
+    disableLeftSwipe,
+    disableRightSwipe,
+    onLeftSwipeIcon,
+    onRightSwipeIcon,
+    onLeftSwipeClass,
+    onRightSwipeClass,
+    onLeftSwipeActiveClass,
+    onRightSwipeActiveClass,
+    onLeftSwipe,
+    onRightSwipe,
+  }: ListViewItemProps) => {
     const dispatch = useAppDispatch();
-    const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
-    return (
-      <>
-        <Dialog
-          isOpen={isDeleteDialogOpen}
-          close={() => {
-            setDeleteDialogOpen(false);
+    return isEditableItem ? (
+      <div className={styles.inputContainer}>
+        <TextInput
+          value={item.text}
+          className={classNames(styles.input, {
+            [styles.done]: item.done,
+          })}
+          placeholder="Item"
+          autoFocus
+          setValue={(newValue) => {
+            dispatch(updateListItemText({ id: item.id, newText: newValue }));
           }}
-          actions={
-            <TextButton
-              variant="default"
-              type="error"
-              size="s"
-              text="Delete"
-              onClick={() => {
-                dispatch(deleteListItem({ listId, listItemId: item.id }));
-              }}
-            />
-          }
+          onBlur={() => {
+            dispatch(changeEditableItem(undefined));
+          }}
+        />
+      </div>
+    ) : (
+      <Swiper
+        containerRef={containerRef}
+        disableLeftSwipe={disableLeftSwipe}
+        disableRightSwipe={disableRightSwipe}
+        onLeftSwipeIcon={onLeftSwipeIcon}
+        onRightSwipeIcon={onRightSwipeIcon}
+        onLeftSwipeClass={onLeftSwipeClass}
+        onRightSwipeClass={onRightSwipeClass}
+        onLeftSwipeActiveClass={onLeftSwipeActiveClass}
+        onRightSwipeActiveClass={onRightSwipeActiveClass}
+        onLeftSwipe={() => {
+          onLeftSwipe && onLeftSwipe(item);
+        }}
+        onRightSwipe={() => {
+          onRightSwipe && onRightSwipe(item);
+        }}
+      >
+        <div
+          className={classNames(styles.item, {
+            [styles.done]: item.done,
+          })}
+          onClick={() => {
+            dispatch(changeEditableItem(item.id));
+          }}
         >
-          Delete <div className={styles.bold}>{item.text}</div>?
-        </Dialog>
-
-        <div className={styles.container}>
-          {isEditableItem ? (
-            <div className={styles.inputContainer}>
-              <TextInput
-                value={item.text}
-                className={styles.input}
-                placeholder="Item"
-                autoFocus
-                setValue={(newValue) => {
-                  dispatch(
-                    updateListItemText({ id: item.id, newText: newValue })
-                  );
-                }}
-              />
-            </div>
-          ) : (
-            <Swiper
-              containerRef={containerRef}
-              leftIcon={DoneIcon}
-              rightIcon={GarbageIcon}
-              permittedDirections={["left", "right"]}
-              onLeft={() => {
-                dispatch(
-                  updateListItemStatus({
-                    id: item.id,
-                    newStatus: ListItemStatus.done,
-                  })
-                );
-              }}
-              onRight={() => {
-                setDeleteDialogOpen(true);
-              }}
-            >
-              <div
-                className={styles.item}
-                onClick={() => {
-                  dispatch(changeEditableItem(item.id));
-                }}
-              >
-                {item.text}
-              </div>
-            </Swiper>
-          )}
+          {item.text}
         </div>
-      </>
+      </Swiper>
     );
   }
 );
