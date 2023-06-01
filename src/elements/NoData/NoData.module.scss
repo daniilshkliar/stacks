@@ -1,0 +1,48 @@
+@use "/src/app/styles/vars.scss";
+
+.container {
+  height: 80%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.faviconMini {
+  width: 4rem;
+  filter: vars.$text--light--filter;
+  animation: dropWobbleAnimation 600ms;
+}
+
+.text {
+  font-size: vars.$font-size--m;
+  color: vars.$text--light;
+  user-select: none;
+}
+
+@keyframes dropWobbleAnimation {
+  0% {
+    transform: translateY(-200%);
+  }
+  25% {
+    transform: translateY(0%);
+  }
+  35% {
+    transform: translateY(-13%);
+  }
+  45% {
+    transform: translateY(-15%);
+  }
+  55% {
+    transform: translateY(-13%);
+  }
+  70% {
+    transform: translateY(0%);
+  }
+  85% {
+    transform: translateY(-5%);
+  }
+  100% {
+    transform: translateY(0%);
+  }
+}

@@ -11,6 +11,7 @@ import TextButton from "../../../../elements/Buttons/TextButton/TextButton";
 import ListViewTitle from "./ListViewTitle/ListViewTitle";
 import DefaultListView from "./DefaultListView/DefaultListView";
 import CycledListView from "./CycledListView/CycledListView";
+import NoData from "../../../../elements/NoData/NoData";
 
 import styles from "./ListView.module.scss";
 
@@ -72,24 +73,28 @@ const ListView = () => {
 
       <ListViewTitle listId={openList.id} listTitle={openList.title} />
 
-      <div ref={containerRef} className={styles.container}>
-        {openList.type === "default" ? (
-          <DefaultListView
-            listId={openList.id}
-            containerRef={containerRef}
-            handleDeleteListItem={handleDeleteListItem}
-          />
-        ) : (
-          <CycledListView
-            listId={openList.id}
-            containerRef={containerRef}
-            toggleListItemStatus={toggleListItemStatus}
-            openListItemDeleteDialog={(item) => {
-              setItemToDelete(item);
-            }}
-          />
-        )}
-      </div>
+      {openList.items.length === 0 ? (
+        <NoData text="It's empty" />
+      ) : (
+        <div ref={containerRef} className={styles.container}>
+          {openList.type === "default" ? (
+            <DefaultListView
+              listId={openList.id}
+              containerRef={containerRef}
+              handleDeleteListItem={handleDeleteListItem}
+            />
+          ) : (
+            <CycledListView
+              listId={openList.id}
+              containerRef={containerRef}
+              toggleListItemStatus={toggleListItemStatus}
+              openListItemDeleteDialog={(item) => {
+                setItemToDelete(item);
+              }}
+            />
+          )}
+        </div>
+      )}
     </>
   );
 };

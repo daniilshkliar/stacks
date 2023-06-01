@@ -1,4 +1,4 @@
-import { memo, useRef } from "react";
+import { useRef } from "react";
 import { useClickAway } from "react-use";
 import TextButton from "../Buttons/TextButton/TextButton";
 
@@ -11,7 +11,7 @@ interface DialogProps {
   close: () => void;
 }
 
-const Dialog = memo(({ children, isOpen, actions, close }: DialogProps) => {
+const Dialog = ({ children, isOpen, actions, close }: DialogProps) => {
   const ref = useRef<HTMLDivElement>(null);
 
   useClickAway(ref, close);
@@ -38,6 +38,6 @@ const Dialog = memo(({ children, isOpen, actions, close }: DialogProps) => {
       </div>
     </div>
   );
-});
+};
 
 export default Dialog;

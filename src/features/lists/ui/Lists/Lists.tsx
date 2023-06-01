@@ -6,6 +6,7 @@ import { goTo } from "../../../navigation/model/navigationSlice";
 import Swiper from "../../../../elements/Swiper/Swiper";
 import Dialog from "../../../../elements/Dialog/Dialog";
 import TextButton from "../../../../elements/Buttons/TextButton/TextButton";
+import NoData from "../../../../elements/NoData/NoData";
 
 import styles from "./Lists.module.scss";
 import GarbageIcon from "../../../../assets/icons/garbage-bin-icon.svg";
@@ -48,30 +49,34 @@ const Lists = ({ containerRef }: ListsProps) => {
         Delete <div className={styles.bold}>{listToDelete?.title}</div>?
       </Dialog>
 
-      <div ref={containerRef} className={styles.container}>
-        {lists.map((list) => (
-          <Swiper
-            key={list.id}
-            containerRef={containerRef}
-            onLeftSwipeIcon={GarbageIcon}
-            disableRightSwipe
-            vibrate
-            onLeftSwipe={() => {
-              setListToDelete(list);
-            }}
-          >
-            <div
-              className={styles.item}
-              onClick={() => {
-                dispatch(changeOpenList(list.id));
-                dispatch(goTo("list"));
+      {lists.length === 0 ? (
+        <NoData text="No lists" />
+      ) : (
+        <div ref={containerRef} className={styles.container}>
+          {lists.map((list) => (
+            <Swiper
+              key={list.id}
+              containerRef={containerRef}
+              onLeftSwipeIcon={GarbageIcon}
+              disableRightSwipe
+              vibrate
+              onLeftSwipe={() => {
+                setListToDelete(list);
               }}
             >
-              {list.title}
-            </div>
-          </Swiper>
-        ))}
-      </div>
+              <div
+                className={styles.item}
+                onClick={() => {
+                  dispatch(changeOpenList(list.id));
+                  dispatch(goTo("list"));
+                }}
+              >
+                {list.title}
+              </div>
+            </Swiper>
+          ))}
+        </div>
+      )}
     </>
   );
 };
