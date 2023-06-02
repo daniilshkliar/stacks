@@ -1,4 +1,5 @@
-import React from "react";
+import React, { createRef } from "react";
+import { CSSTransition, TransitionGroup } from "react-transition-group";
 import { useAppSelector } from "../../../../../app/hooks";
 import {
   selectEditableItemId,
@@ -32,41 +33,69 @@ const CycledListView = ({
   const editableItemId = useAppSelector(selectEditableItemId);
 
   return (
-    <div>
+    <div style={{ overflow: "hidden" }}>
       <Divider text="Active" />
 
-      {listItems
-        .filter((item) => !item.done)
-        .map((item) => (
-          <ListViewItem
-            key={item.id}
-            item={item}
-            isEditableItem={editableItemId === item.id}
-            containerRef={containerRef}
-            onRightSwipeIcon={DoneIcon}
-            disableLeftSwipe
-            onRightSwipe={toggleListItemStatus}
-          />
-        ))}
+      <TransitionGroup component={null}>
+        {listItems
+          .filter((item) => !item.done)
+          .map((item) => {
+            const itemRef = createRef<HTMLDivElement>();
+
+            return (
+              <CSSTransition
+                key={item.id}
+                nodeRef={itemRef}
+                timeout={300}
+                classNames="list-item-animation"
+              >
+                <div ref={itemRef}>
+                  <ListViewItem
+                    item={item}
+                    isEditableItem={editableItemId === item.id}
+                    containerRef={containerRef}
+                    onRightSwipeIcon={DoneIcon}
+                    disableLeftSwipe
+                    onRightSwipe={toggleListItemStatus}
+                  />
+                </div>
+              </CSSTransition>
+            );
+          })}
+      </TransitionGroup>
 
       <Divider text="Done" />
 
-      {listItems
-        .filter((item) => item.done)
-        .map((item) => (
-          <ListViewItem
-            key={item.id}
-            item={item}
-            isEditableItem={editableItemId === item.id}
-            containerRef={containerRef}
-            onLeftSwipeIcon={GarbageIcon}
-            onRightSwipeIcon={CycleIcon}
-            onRightSwipeClass={styles.repeat}
-            onRightSwipeActiveClass={styles.repeatActive}
-            onLeftSwipe={openListItemDeleteDialog}
-            onRightSwipe={toggleListItemStatus}
-          />
-        ))}
+      <TransitionGroup component={null}>
+        {listItems
+          .filter((item) => item.done)
+          .map((item) => {
+            const itemRef = createRef<HTMLDivElement>();
+
+            return (
+              <CSSTransition
+                key={item.id}
+                nodeRef={itemRef}
+                timeout={300}
+                classNames="list-item-animation"
+              >
+                <div ref={itemRef}>
+                  <ListViewItem
+                    item={item}
+                    isEditableItem={editableItemId === item.id}
+                    containerRef={containerRef}
+                    onLeftSwipeIcon={GarbageIcon}
+                    onRightSwipeIcon={CycleIcon}
+                    onRightSwipeClass={styles.repeat}
+                    onRightSwipeActiveClass={styles.repeatActive}
+                    onLeftSwipe={openListItemDeleteDialog}
+                    onRightSwipe={toggleListItemStatus}
+                  />
+                </div>
+              </CSSTransition>
+            );
+          })}
+      </TransitionGroup>
     </div>
   );
 };

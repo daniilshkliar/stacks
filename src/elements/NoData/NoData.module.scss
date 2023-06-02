@@ -1,4 +1,5 @@
 @use "/src/app/styles/vars.scss";
+@use "/src/app/styles/animations.scss";
 
 .container {
   height: 80%;
@@ -18,31 +19,4 @@
   font-size: vars.$font-size--m;
   color: vars.$text--light;
   user-select: none;
-}
-
-@keyframes dropWobbleAnimation {
-  0% {
-    transform: translateY(-200%);
-  }
-  25% {
-    transform: translateY(0%);
-  }
-  35% {
-    transform: translateY(-13%);
-  }
-  45% {
-    transform: translateY(-15%);
-  }
-  55% {
-    transform: translateY(-13%);
-  }
-  70% {
-    transform: translateY(0%);
-  }
-  85% {
-    transform: translateY(-5%);
-  }
-  100% {
-    transform: translateY(0%);
-  }
 }

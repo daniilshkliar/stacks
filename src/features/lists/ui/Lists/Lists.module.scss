@@ -4,6 +4,7 @@
   max-height: calc(100% - vars.$navbar-height);
   padding: 0.8rem 0;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .item {

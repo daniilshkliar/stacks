@@ -1,4 +1,5 @@
 @use "/src/app/styles/vars.scss";
+@use "/src/app/styles/animations.scss";
 
 @font-face {
   src: local("Roboto Condensed"),
@@ -44,4 +45,13 @@ img {
 
 ::-webkit-scrollbar-thumb {
   background-color: vars.$text--light;
+}
+
+.list-item-animation-enter-active {
+  animation: slideWobbleFromRightAnimation 300ms;
+}
+
+.list-item-animation-exit-active {
+  opacity: 0;
+  transition: all 300ms;
 }

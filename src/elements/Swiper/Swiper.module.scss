@@ -1,4 +1,5 @@
 @use "/src/app/styles/vars.scss";
+@use "/src/app/styles/animations.scss";
 
 .container {
   position: relative;
@@ -29,7 +30,7 @@
   background-color: vars.$success--light;
 
   & div {
-    animation: iconAnimation 500ms;
+    animation: shakeAnimation 500ms;
   }
 }
 
@@ -37,7 +38,7 @@
   background-color: vars.$error--light;
 
   & div {
-    animation: iconAnimation 500ms;
+    animation: shakeAnimation 500ms;
   }
 }
 
@@ -45,22 +46,4 @@
   width: 1.5em;
   margin: 4px 20px 0;
   filter: vars.$white--filter;
-}
-
-@keyframes iconAnimation {
-  0% {
-    transform: rotate(0);
-  }
-  25% {
-    transform: rotate(10deg) scale(1.08);
-  }
-  50% {
-    transform: rotate(-10deg) scale(1.04);
-  }
-  75% {
-    transform: rotate(5deg) scale(1.02);
-  }
-  100% {
-    transform: rotate(0);
-  }
 }

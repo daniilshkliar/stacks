@@ -1,0 +1,62 @@
+@keyframes dropWobbleAnimation {
+  0% {
+    transform: translateY(-200%);
+  }
+  25% {
+    transform: translateY(0%);
+  }
+  35% {
+    transform: translateY(-13%);
+  }
+  45% {
+    transform: translateY(-15%);
+  }
+  55% {
+    transform: translateY(-13%);
+  }
+  70% {
+    transform: translateY(0%);
+  }
+  85% {
+    transform: translateY(-5%);
+  }
+  100% {
+    transform: translateY(0%);
+  }
+}
+
+@keyframes shakeAnimation {
+  0% {
+    transform: rotate(0);
+  }
+  25% {
+    transform: rotate(10deg) scale(1.08);
+  }
+  50% {
+    transform: rotate(-10deg) scale(1.04);
+  }
+  75% {
+    transform: rotate(5deg) scale(1.02);
+  }
+  100% {
+    transform: rotate(0);
+  }
+}
+
+@keyframes slideWobbleFromRightAnimation {
+  0% {
+    transform: translateX(100%);
+  }
+  45% {
+    transform: translateX(0%);
+  }
+  65% {
+    transform: translateX(2%);
+  }
+  70% {
+    transform: translateX(2%);
+  }
+  100% {
+    transform: translateX(0%);
+  }
+}

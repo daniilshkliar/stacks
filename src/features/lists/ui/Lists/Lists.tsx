@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, createRef } from "react";
+import { TransitionGroup, CSSTransition } from "react-transition-group";
 import { useAppDispatch, useAppSelector } from "../../../../app/hooks";
 import { changeOpenList, deleteList, selectLists } from "../../model/listSlice";
 import { List } from "../../model/listTypes";
@@ -53,28 +54,42 @@ const Lists = ({ containerRef }: ListsProps) => {
         <NoData text="No lists" />
       ) : (
         <div ref={containerRef} className={styles.container}>
-          {lists.map((list) => (
-            <Swiper
-              key={list.id}
-              containerRef={containerRef}
-              onLeftSwipeIcon={GarbageIcon}
-              disableRightSwipe
-              vibrate
-              onLeftSwipe={() => {
-                setListToDelete(list);
-              }}
-            >
-              <div
-                className={styles.item}
-                onClick={() => {
-                  dispatch(changeOpenList(list.id));
-                  dispatch(goTo("list"));
-                }}
-              >
-                {list.title}
-              </div>
-            </Swiper>
-          ))}
+          <TransitionGroup component={null}>
+            {lists.map((list) => {
+              const itemRef = createRef<HTMLDivElement>();
+
+              return (
+                <CSSTransition
+                  key={list.id}
+                  nodeRef={itemRef}
+                  timeout={300}
+                  classNames="list-item-animation"
+                >
+                  <div ref={itemRef}>
+                    <Swiper
+                      containerRef={containerRef}
+                      onLeftSwipeIcon={GarbageIcon}
+                      disableRightSwipe
+                      vibrate
+                      onLeftSwipe={() => {
+                        setListToDelete(list);
+                      }}
+                    >
+                      <div
+                        className={styles.item}
+                        onClick={() => {
+                          dispatch(changeOpenList(list.id));
+                          dispatch(goTo("list"));
+                        }}
+                      >
+                        {list.title}
+                      </div>
+                    </Swiper>
+                  </div>
+                </CSSTransition>
+              );
+            })}
+          </TransitionGroup>
         </div>
       )}
     </>
