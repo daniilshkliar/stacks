@@ -1,4 +1,4 @@
-import { memo, useState } from "react";
+import { useState, memo } from "react";
 import { useAppDispatch } from "../../../../../app/hooks";
 import { updateListTitle } from "../../../model/listSlice";
 import TextInput from "../../../../../elements/Inputs/TextInput/TextInput";
@@ -28,9 +28,10 @@ const ListViewTitle = memo(({ listId, listTitle }: ListViewTitleProps) => {
       <TextInput
         value={listTitle}
         placeholder="List"
+        maxLength={20}
         animationFrom="end"
-        autoFocus
         className={styles.input}
+        autoFocus
         setValue={(newValue) => {
           dispatch(updateListTitle({ id: listId, newTitle: newValue }));
         }}

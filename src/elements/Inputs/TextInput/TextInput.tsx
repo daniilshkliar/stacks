@@ -6,6 +6,7 @@ import styles from "./TextInput.module.scss";
 interface TextInputProps {
   value: string;
   placeholder: string;
+  maxLength?: number;
   animationFrom?: "end" | "start";
   autoFocus?: boolean;
   disabled?: boolean;
@@ -19,6 +20,7 @@ const TextInput = memo(
   ({
     value,
     placeholder,
+    maxLength,
     animationFrom = "start",
     autoFocus,
     disabled,
@@ -48,6 +50,7 @@ const TextInput = memo(
           name="text"
           className={classNames(styles.input, className)}
           value={value}
+          maxLength={maxLength}
           placeholder={placeholder}
           rows={1}
           autoFocus={autoFocus}

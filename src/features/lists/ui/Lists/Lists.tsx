@@ -1,9 +1,9 @@
 import { useState, createRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { TransitionGroup, CSSTransition } from "react-transition-group";
 import { useAppDispatch, useAppSelector } from "../../../../app/hooks";
-import { changeOpenList, deleteList, selectLists } from "../../model/listSlice";
+import { deleteList, selectLists } from "../../model/listSlice";
 import { List } from "../../model/listTypes";
-import { goTo } from "../../../navigation/model/navigationSlice";
 import Swiper from "../../../../elements/Swiper/Swiper";
 import Dialog from "../../../../elements/Dialog/Dialog";
 import TextButton from "../../../../elements/Buttons/TextButton/TextButton";
@@ -17,6 +17,7 @@ interface ListsProps {
 }
 
 const Lists = ({ containerRef }: ListsProps) => {
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const lists = useAppSelector(selectLists);
   const [listToDelete, setListToDelete] = useState<List>();
@@ -78,8 +79,7 @@ const Lists = ({ containerRef }: ListsProps) => {
                       <div
                         className={styles.item}
                         onClick={() => {
-                          dispatch(changeOpenList(list.id));
-                          dispatch(goTo("list"));
+                          navigate(`/list/${list.id}`);
                         }}
                       >
                         {list.title}

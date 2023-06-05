@@ -1,26 +1,20 @@
 import { useRef } from "react";
-import { useAppDispatch, useAppSelector } from "../app/hooks";
-import {
-  goTo,
-  selectLocation,
-} from "../features/navigation/model/navigationSlice";
+import { useLocation, useNavigate } from "react-router-dom";
 import Carousel from "../elements/Carousel/Carousel";
 import CalendarScreen from "./CalendarScreen";
 import ListScreen from "./ListScreen";
 
 const HomeScreen = () => {
-  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const listsContainerRef = useRef<HTMLDivElement>(null);
-  const location = useAppSelector(selectLocation);
+  const location = useLocation();
 
   return (
     <Carousel
-      slideIndex={location === "calendar" ? 0 : 1}
+      slideIndex={location.pathname === "/calendar" ? 0 : 1}
       threshold={50}
-      onSwipe={(newIndex) => {
-        dispatch(goTo(newIndex === 0 ? "calendar" : "lists"));
-      }}
       preventOnScroll={listsContainerRef}
+      onSwipe={(newIndex) => navigate(newIndex === 0 ? "/calendar" : "/lists")}
     >
       <CalendarScreen />
       <ListScreen listsContainerRef={listsContainerRef} />

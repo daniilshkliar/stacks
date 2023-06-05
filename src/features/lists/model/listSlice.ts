@@ -24,7 +24,6 @@ import {
 interface ListState {
   lists: NormalizedEntity<List>;
   listItems: NormalizedEntity<ListItem>;
-  openList?: string;
   editableItem?: string;
   isLoading: boolean;
 }
@@ -58,8 +57,6 @@ export const listSlice = createSlice({
     createList: {
       reducer: (state, action: PayloadAction<List>) => {
         createNormalizedObject(state.lists, action.payload.id, action.payload);
-
-        state.openList = action.payload.id;
 
         putListInDB(action.payload, current(state.lists.allIds));
       },
@@ -105,10 +102,6 @@ export const listSlice = createSlice({
 
       deleteNormalizedObjects(state.listItems, listItemsToDelete);
       deleteNormalizedObjects(state.lists, [action.payload]);
-
-      if (state.openList === action.payload) {
-        state.openList = undefined;
-      }
 
       deleteListFromDB(
         action.payload,
@@ -187,25 +180,24 @@ export const listSlice = createSlice({
 
       deleteListItemFromDB(listItemId, state.listItems.allIds, current(list));
     },
-    changeOpenList: (state, action: PayloadAction<string | undefined>) => {
-      state.openList = action.payload;
-    },
-    changeEditableItem: (state, action: PayloadAction<string | undefined>) => {
+    changeEditableItem: (
+      state,
+      action: PayloadAction<{ listId: string; itemId: string | undefined }>
+    ) => {
       if (
-        state.openList &&
         state.editableItem &&
         !state.listItems.byId[state.editableItem].text.trim()
       ) {
         listSlice.caseReducers.deleteListItem(state, {
           payload: {
-            listId: state.openList,
+            listId: action.payload.listId,
             listItemId: state.editableItem,
           },
           type: action.type,
         });
       }
 
-      state.editableItem = action.payload;
+      state.editableItem = action.payload.itemId;
     },
   },
   extraReducers: (builder) => {
@@ -227,6 +219,17 @@ export const selectLists = (state: RootState): List[] => {
   return state.lists.lists.allIds.map((id) => state.lists.lists.byId[id]);
 };
 
+export const selectListById = (
+  state: RootState,
+  id: string | undefined
+): List | undefined => {
+  if (!id) {
+    return undefined;
+  }
+
+  return state.lists.lists.byId[id];
+};
+
 export const selectListItemsByListId = (
   state: RootState,
   listId: string
@@ -234,18 +237,6 @@ export const selectListItemsByListId = (
   return state.lists.lists.byId[listId].items.map(
     (id) => state.lists.listItems.byId[id]
   );
-};
-
-export const selectOpenListId = (state: RootState): string | undefined => {
-  return state.lists.openList;
-};
-
-export const selectOpenList = (state: RootState): List | undefined => {
-  if (!state.lists.openList) {
-    return undefined;
-  }
-
-  return state.lists.lists.byId[state.lists.openList];
 };
 
 export const selectEditableItemId = (state: RootState): string | undefined => {
@@ -261,7 +252,6 @@ export const {
   updateListItemText,
   updateListItemStatus,
   deleteListItem,
-  changeOpenList,
   changeEditableItem,
 } = listSlice.actions;
 

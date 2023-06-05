@@ -27,6 +27,11 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
+#root {
+  width: 100dvw;
+  height: 100dvh;
+}
+
 a {
   color: inherit;
   text-decoration-line: none;

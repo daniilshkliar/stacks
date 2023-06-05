@@ -1,11 +1,7 @@
-import { useState, useRef } from "react";
-import { useAppDispatch, useAppSelector } from "../../../../app/hooks";
-import {
-  deleteListItem,
-  selectOpenList,
-  updateListItemStatus,
-} from "../../model/listSlice";
-import { ListItem } from "../../model/listTypes";
+import { useState, useRef, useCallback } from "react";
+import { useAppDispatch } from "../../../../app/hooks";
+import { deleteListItem, updateListItemStatus } from "../../model/listSlice";
+import { List, ListItem } from "../../model/listTypes";
 import Dialog from "../../../../elements/Dialog/Dialog";
 import TextButton from "../../../../elements/Buttons/TextButton/TextButton";
 import ListViewTitle from "./ListViewTitle/ListViewTitle";
@@ -15,41 +11,43 @@ import NoData from "../../../../elements/NoData/NoData";
 
 import styles from "./ListView.module.scss";
 
-const ListView = () => {
+interface ListViewProps {
+  list: List;
+}
+
+const ListView = ({ list }: ListViewProps) => {
   const dispatch = useAppDispatch();
   const containerRef = useRef<HTMLDivElement>(null);
-  const openList = useAppSelector(selectOpenList);
   const [itemToDelete, setItemToDelete] = useState<ListItem>();
 
-  const toggleListItemStatus = (item: ListItem) => {
+  const toggleListItemStatus = useCallback((item: ListItem) => {
     dispatch(
       updateListItemStatus({
         id: item.id,
         done: !item.done,
       })
     );
-  };
+  }, []);
 
-  const handleDeleteListItem = (item?: ListItem) => {
-    const listItemId = item?.id || itemToDelete?.id;
+  const handleDeleteListItem = useCallback(
+    (item?: ListItem) => {
+      const listItemId = item?.id || itemToDelete?.id;
 
-    if (!openList || !listItemId) {
-      return;
-    }
+      if (!listItemId) {
+        return;
+      }
 
-    dispatch(
-      deleteListItem({
-        listId: openList.id,
-        listItemId,
-      })
-    );
+      dispatch(
+        deleteListItem({
+          listId: list.id,
+          listItemId,
+        })
+      );
 
-    setItemToDelete(undefined);
-  };
-
-  if (openList === undefined) {
-    return <></>;
-  }
+      setItemToDelete(undefined);
+    },
+    [itemToDelete]
+  );
 
   return (
     <>
@@ -71,21 +69,21 @@ const ListView = () => {
         Delete <div className={styles.bold}>{itemToDelete?.text}</div>?
       </Dialog>
 
-      <ListViewTitle listId={openList.id} listTitle={openList.title} />
+      <ListViewTitle listId={list.id} listTitle={list.title} />
 
-      {openList.items.length === 0 ? (
+      {list.items.length === 0 ? (
         <NoData text="It's empty" />
       ) : (
         <div ref={containerRef} className={styles.container}>
-          {openList.type === "default" ? (
+          {list.type === "default" ? (
             <DefaultListView
-              listId={openList.id}
+              listId={list.id}
               containerRef={containerRef}
               handleDeleteListItem={handleDeleteListItem}
             />
           ) : (
             <CycledListView
-              listId={openList.id}
+              listId={list.id}
               containerRef={containerRef}
               toggleListItemStatus={toggleListItemStatus}
               openListItemDeleteDialog={(item) => {

@@ -1,13 +1,13 @@
-import { useCallback } from "react";
+import { memo, useCallback } from "react";
 import { useAppDispatch, useAppSelector } from "../../../../../app/hooks";
 import { selectRelativeToKeyboardStyle } from "../../../../settings/model/settingsSlice";
 import {
   changeEditableItem,
   createListItem,
   selectEditableItemId,
-  selectOpenList,
   updateListType,
 } from "../../../model/listSlice";
+import { ListType } from "../../../model/listTypes";
 import IconButton from "../../../../../elements/Buttons/IconButton/IconButton";
 
 import styles from "./ListViewControls.module.scss";
@@ -16,36 +16,32 @@ import CycleIcon from "../../../../../assets/icons/cycle-icon.svg";
 import ListIcon from "../../../../../assets/icons/list-icon.svg";
 import DoubleDoneIcon from "../../../../../assets/icons/double-done-icon.svg";
 
-const ListViewControls = () => {
+interface ListViewControlsProps {
+  listId: string;
+  listType: ListType;
+}
+
+const ListViewControls = memo(({ listId, listType }: ListViewControlsProps) => {
   const dispatch = useAppDispatch();
-  const openList = useAppSelector(selectOpenList);
   const editableItemId = useAppSelector(selectEditableItemId);
   const relativeToKeyboardStyle = useAppSelector(selectRelativeToKeyboardStyle);
 
   const finishEditing = useCallback(() => {
-    dispatch(changeEditableItem(undefined));
+    dispatch(changeEditableItem({ listId, itemId: undefined }));
   }, []);
 
   const changeListType = useCallback(() => {
-    if (openList) {
-      dispatch(
-        updateListType({
-          id: openList.id,
-          newType: openList.type === "cycled" ? "default" : "cycled",
-        })
-      );
-    }
-  }, [openList]);
+    dispatch(
+      updateListType({
+        id: listId,
+        newType: listType === "cycled" ? "default" : "cycled",
+      })
+    );
+  }, [listType]);
 
   const addListItem = useCallback(() => {
-    if (openList) {
-      dispatch(createListItem(openList.id));
-    }
-  }, [openList]);
-
-  if (openList === undefined) {
-    return <></>;
-  }
+    dispatch(createListItem(listId));
+  }, []);
 
   return (
     <div className={styles.controls} style={relativeToKeyboardStyle}>
@@ -60,7 +56,7 @@ const ListViewControls = () => {
 
       <IconButton
         size="m"
-        icon={openList.type === "cycled" ? CycleIcon : ListIcon}
+        icon={listType === "cycled" ? CycleIcon : ListIcon}
         vibrate
         onClick={changeListType}
       />
@@ -73,6 +69,6 @@ const ListViewControls = () => {
       />
     </div>
   );
-};
+});
 
 export default ListViewControls;

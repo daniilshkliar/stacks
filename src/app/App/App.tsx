@@ -1,16 +1,14 @@
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import classNames from "classnames";
 import { useAppSelector, useDatabase, useMobileKeyboard } from "../hooks";
 import { selectKeyboardHeight } from "../../features/settings/model/settingsSlice";
-import { selectLocation } from "../../features/navigation/model/navigationSlice";
-import AccountScreen from "../../screens/AccountScreen";
-import ListViewScreen from "../../screens/ListViewScreen";
-import HomeScreen from "../../screens/HomeScreen";
-import NavBar from "../../features/navigation/ui/NavBar/NavBar";
+import { routes } from "../routes";
 
 import styles from "./App.module.scss";
 
 const App = () => {
-  const location = useAppSelector(selectLocation);
+  const navigate = useNavigate();
+  const location = useLocation();
   const keyboardHeight = useAppSelector(selectKeyboardHeight);
 
   useDatabase();
@@ -23,16 +21,34 @@ const App = () => {
           [styles.fullHeight]: keyboardHeight,
         })}
       >
-        {location === "account" ? (
-          <AccountScreen />
-        ) : location === "list" ? (
-          <ListViewScreen />
-        ) : (
-          <HomeScreen />
-        )}
+        <Outlet />
       </div>
 
-      {!keyboardHeight && <NavBar />}
+      {!keyboardHeight && (
+        <div className={styles.navbar}>
+          {routes[0].children
+            .filter((route) => route.navbarIcon)
+            .map((route) => (
+              <div
+                key={route.path}
+                className={classNames(
+                  styles.element,
+                  styles[route.path.slice(1)],
+                  {
+                    [styles.current]: location.pathname === route.path,
+                  }
+                )}
+                onClick={() => navigate(route.path)}
+              >
+                <img
+                  src={route.navbarIcon}
+                  alt={route.path}
+                  draggable="false"
+                />
+              </div>
+            ))}
+        </div>
+      )}
     </>
   );
 };

@@ -10,10 +10,10 @@ import TextInput from "../../../../../elements/Inputs/TextInput/TextInput";
 import Swiper from "../../../../../elements/Swiper/Swiper";
 
 import styles from "./ListViewItem.module.scss";
-import DashIcon from "../../../../../assets/icons/dash-icon.svg";
 
 interface ListViewItemProps {
   item: ListItem;
+  listId: string;
   isEditableItem: boolean;
   containerRef: React.RefObject<HTMLDivElement>;
   disableLeftSwipe?: boolean;
@@ -31,6 +31,7 @@ interface ListViewItemProps {
 const ListViewItem = memo(
   ({
     item,
+    listId,
     isEditableItem,
     containerRef,
     disableLeftSwipe,
@@ -59,7 +60,7 @@ const ListViewItem = memo(
             dispatch(updateListItemText({ id: item.id, newText: newValue }));
           }}
           onBlur={() => {
-            dispatch(changeEditableItem(undefined));
+            dispatch(changeEditableItem({ listId, itemId: undefined }));
           }}
         />
       </div>
@@ -87,11 +88,10 @@ const ListViewItem = memo(
             [styles.done]: item.done,
           })}
           onClick={() => {
-            dispatch(changeEditableItem(item.id));
+            dispatch(changeEditableItem({ listId, itemId: item.id }));
           }}
         >
-          {!item.done && <img src={DashIcon} alt="dash" draggable="false" />}
-          <div>{item.text}</div>
+          {item.text}
         </div>
       </Swiper>
     );
