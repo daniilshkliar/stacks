@@ -1,24 +1,55 @@
+import { RouteMatchCallbackOptions, clientsClaim } from "workbox-core";
 import { cleanupOutdatedCaches, precacheAndRoute } from "workbox-precaching";
 import { registerRoute } from "workbox-routing";
 import { CacheFirst } from "workbox-strategies";
-import { pageCache } from "workbox-recipes";
 import { CacheableResponsePlugin } from "workbox-cacheable-response";
 import { ExpirationPlugin } from "workbox-expiration";
 
 declare const self: ServiceWorkerGlobalScope;
 
-precacheAndRoute(self.__WB_MANIFEST);
 cleanupOutdatedCaches();
+precacheAndRoute(self.__WB_MANIFEST);
 
-const staticResourcesMatchCallback = ({ request }: any) =>
+const manifestMatchCallback = ({ request }: RouteMatchCallbackOptions) =>
+  request.destination === "manifest";
+
+const pagesMatchCallback = ({ request }: RouteMatchCallbackOptions) =>
+  request.mode === "navigate";
+
+const staticResourcesMatchCallback = ({ request }: RouteMatchCallbackOptions) =>
   request.destination === "style" ||
   request.destination === "script" ||
   request.destination === "worker";
 
-const imagesMatchCallback = ({ request }: any) =>
+const imagesMatchCallback = ({ request }: RouteMatchCallbackOptions) =>
   request.destination === "image";
 
-const fontsMatchCallback = ({ request }: any) => request.destination === "font";
+const fontsMatchCallback = ({ request }: RouteMatchCallbackOptions) =>
+  request.destination === "font";
+
+registerRoute(
+  manifestMatchCallback,
+  new CacheFirst({
+    cacheName: "manifest",
+    plugins: [
+      new CacheableResponsePlugin({
+        statuses: [0, 200],
+      }),
+    ],
+  })
+);
+
+registerRoute(
+  pagesMatchCallback,
+  new CacheFirst({
+    cacheName: "pages",
+    plugins: [
+      new CacheableResponsePlugin({
+        statuses: [0, 200],
+      }),
+    ],
+  })
+);
 
 registerRoute(
   staticResourcesMatchCallback,
@@ -60,4 +91,5 @@ registerRoute(
   })
 );
 
-pageCache();
+self.skipWaiting();
+clientsClaim();
